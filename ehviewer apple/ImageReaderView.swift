@@ -41,6 +41,9 @@ struct ImageReaderView: View {
     @State private var hasAppliedInitialPage = false
     @State private var isZoomed = false
     @State private var showTutorial = false
+    
+    // GameController 支持 (蓝牙翻页器)
+    @StateObject private var gameControllerManager = GameControllerManager()
 
     // 从设置读取
     @State private var readingDirection: ReadingDirection = .rightToLeft
@@ -273,6 +276,22 @@ struct ImageReaderView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation(.easeInOut(duration: 0.3)) {
                     showTutorial = true
+                }
+            }
+        }
+        
+        // 设置 GameController 回调 (蓝牙翻页器支持)
+        gameControllerManager.onPageTurnerButton = { [weak vm] action in
+            Task { @MainActor in
+                switch action {
+                case .nextPage:
+                    self.goToNextPage()
+                case .previousPage:
+                    self.goToPreviousPage()
+                case .toggleUI:
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        self.showOverlay.toggle()
+                    }
                 }
             }
         }
