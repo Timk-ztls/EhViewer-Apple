@@ -43,6 +43,7 @@ struct GalleryDetailView: View {
     @State private var showRatingSheet = false
     @State private var showAllPreviews = false
     @State private var showFavoritePicker = false
+    @State private var showArchiveDownload = false
 
     /// 标签点击导航动作 — 在 Split/三栏布局中将标签列表推入左侧栏
     @Environment(\.tagNavigationAction) private var tagNavigationAction
@@ -293,6 +294,12 @@ struct GalleryDetailView: View {
                 }
             }
             Divider().frame(height: 32)
+            actionButton(icon: "archivebox", title: "归档") {
+                if vm.detail?.archiveUrl != nil {
+                    showArchiveDownload = true
+                }
+            }
+            Divider().frame(height: 32)
             actionButton(icon: "square.and.arrow.up", title: "分享") {
                 let site = GalleryActionService.siteBaseURL
                 let urlStr = "\(site)g/\(gallery.gid)/\(gallery.token)/"
@@ -330,6 +337,14 @@ struct GalleryDetailView: View {
                 onCancel: { showFavoritePicker = false }
             )
             .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showArchiveDownload) {
+            ArchiveDownloadSheet(
+                gid: gallery.gid,
+                token: gallery.token,
+                archiveUrl: vm.detail?.archiveUrl
+            )
+            .presentationDetents([.medium, .large])
         }
     }
 
