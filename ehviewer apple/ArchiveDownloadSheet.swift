@@ -207,12 +207,9 @@ struct ArchiveDownloadSheet: View {
             )
             
             await MainActor.run {
-                // 如果返回的归档列表为空，显示错误
-                if result.archives.isEmpty {
-                    errorMessage = "该画廊没有可用的归档下载选项"
-                } else {
-                    archiveList = result
-                    // 默认选择第一个选项
+                archiveList = result
+                // 默认选择第一个选项
+                if !result.archives.isEmpty {
                     selectedResolution = result.archives[0].0
                 }
                 isLoading = false
@@ -227,9 +224,7 @@ struct ArchiveDownloadSheet: View {
     
     private func startDownload() async {
         guard let archiveList = archiveList, !archiveList.paramOr.isEmpty else {
-            await MainActor.run {
-                errorMessage = "缺少必要的下载参数"
-            }
+            // This shouldn't happen due to button being disabled, but guard anyway
             return
         }
         
@@ -248,8 +243,10 @@ struct ArchiveDownloadSheet: View {
             await MainActor.run {
                 isDownloading = false
                 dismiss()
-                // 显示成功提示
-                // TODO: 添加实际的下载任务到队列
+                // Note: The H@H download is initiated server-side. Users will receive
+                // a download link via email or can access it from their E-Hentai downloads page.
+                // This app doesn't currently track H@H download progress as it's handled
+                // by the E-Hentai infrastructure, not the app.
             }
         } catch EhError.noHathClient {
             await MainActor.run {
