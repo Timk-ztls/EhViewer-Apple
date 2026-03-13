@@ -281,8 +281,9 @@ struct ImageReaderView: View {
         }
         
         // 设置 GameController 回调 (蓝牙翻页器支持)
-        gameControllerManager.onPageTurnerButton = { [weak vm] action in
+        gameControllerManager.onPageTurnerButton = { [weak self] action in
             Task { @MainActor in
+                guard let self = self else { return }
                 switch action {
                 case .nextPage:
                     self.goToNextPage()

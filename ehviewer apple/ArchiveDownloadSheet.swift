@@ -213,9 +213,7 @@ struct ArchiveDownloadSheet: View {
                 } else {
                     archiveList = result
                     // 默认选择第一个选项
-                    if !result.archives.isEmpty {
-                        selectedResolution = result.archives[0].0
-                    }
+                    selectedResolution = result.archives[0].0
                 }
                 isLoading = false
             }
